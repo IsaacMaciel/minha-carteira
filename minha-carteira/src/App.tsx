@@ -1,5 +1,5 @@
 import React from 'react';
-import {ThemeProvider} from 'styled-components'
+import { ThemeProvider } from 'styled-components'
 
 import Dashboard from './pages/DashBoard';
 
@@ -9,17 +9,16 @@ import Layout from './components/Layout'
 import dark from './styles/themes/dark';
 
 
-
-
-
 function App() {
   return (
 
     <ThemeProvider theme={dark}>
       <GlobalStyles />
-      <Layout/>
+      <Layout>
+        <Dashboard />
+      </Layout>
     </ThemeProvider>
-  
+
 
   );
 }

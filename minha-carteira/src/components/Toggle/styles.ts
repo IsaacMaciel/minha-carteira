@@ -3,7 +3,8 @@ import Switch, {ReactSwitchProps} from 'react-switch'
 
 
 export const Container = styled.div`
-
+    display:flex;
+    align-items:center;
 `;
 
 export const ToggleLabel = styled.span`
