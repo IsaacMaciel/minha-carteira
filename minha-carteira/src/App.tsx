@@ -7,6 +7,7 @@ import GlobalStyles from './styles/GlobalStyles';
 
 import Layout from './components/Layout'
 import dark from './styles/themes/dark';
+import List from './pages/List';
 
 
 function App() {
@@ -15,7 +16,8 @@ function App() {
     <ThemeProvider theme={dark}>
       <GlobalStyles />
       <Layout>
-        <Dashboard />
+        <List/>
+        {/* <Dashboard /> */}
       </Layout>
     </ThemeProvider>
 
