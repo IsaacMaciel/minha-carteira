@@ -4,15 +4,14 @@ import { Container, Tag } from './styles';
 
 
 interface IHistoryFinanceCard {
-    cardColor: string,
     tagColor: string,
     title: string,
     subtitle: string,
     amount: string
 }
-const HistoryFinanceCard: React.FC<IHistoryFinanceCard> = ({ cardColor, tagColor, title, subtitle, amount }) => {
+const HistoryFinanceCard: React.FC<IHistoryFinanceCard> = ({ tagColor, title, subtitle, amount }) => {
     return (
-        <Container color={cardColor}>
+        <Container>
             <Tag color={tagColor} />
             <div>
                 <span>{title}</span>
