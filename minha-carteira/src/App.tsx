@@ -1,13 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components'
-
-import Dashboard from './pages/DashBoard';
-
 import GlobalStyles from './styles/GlobalStyles';
 
-import Layout from './components/Layout'
+import Routes from './routes';
+
 import dark from './styles/themes/dark';
-import List from './pages/List';
 
 
 function App() {
@@ -15,10 +12,7 @@ function App() {
 
     <ThemeProvider theme={dark}>
       <GlobalStyles />
-      <Layout>
-        <List/>
-        {/* <Dashboard /> */}
-      </Layout>
+      <Routes />
     </ThemeProvider>
 
 

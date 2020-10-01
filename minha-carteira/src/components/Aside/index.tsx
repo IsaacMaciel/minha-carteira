@@ -1,5 +1,6 @@
 import React from 'react'
 
+import { Link } from 'react-router-dom'
 import logoImg from '../../assets/logo.svg';
 import {
     MdDashboard,
@@ -19,20 +20,27 @@ const Aside: React.FC = () => {
             </Header>
 
             <MenuContainer>
-                <MenuItemLink href="#">
-                    <MdDashboard />
+                <Link to="/dashboard" style={{textDecoration:"none"}}>
+                    <MenuItemLink >
+                        <MdDashboard />
                     DashBoard
                 </MenuItemLink>
+                </Link>
 
-                <MenuItemLink href="#">
-                    <MdArrowUpward/>
+
+                <Link to="/list/entry" style={{textDecoration:"none"}}>
+                    <MenuItemLink>
+                        <MdArrowUpward />
                    Entradas
                 </MenuItemLink>
+                </Link>
 
-                <MenuItemLink href="#">
-                    <MdArrowDownward/>
+                <Link to="/list/exit" style={{textDecoration:"none"}}>
+                    <MenuItemLink >
+                        <MdArrowDownward />
                     Saídas
                 </MenuItemLink>
+                </Link>
 
                 <MenuItemLink href="#">
                     <MdExitToApp />
