@@ -1,7 +1,13 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import ContentHeader from '../../components/ContentHeader';
 import HistoryFinanceCard from '../../components/HistoryFinanceCard';
 import SelectInput from '../../components/SelectInput';
+
+import gains from '../../repositories/gains';
+import expenses from '../../repositories/expenses';
+
+import formatCurrency from '../../utils/formatCurrency';
+import formatDate from '../../utils/formatDate';
 
 import { Container, Content, Filters } from './styles';
 
@@ -16,6 +22,42 @@ const months = [{
 {
     value: 3,
     label: 'Março'
+},
+{
+    value: 4,
+    label: 'Abril'
+},
+{
+    value: 5,
+    label: 'Maio'
+},
+{
+    value: 6,
+    label: 'Junho'
+},
+{
+    value: 7,
+    label: 'Julho'
+},
+{
+    value: 8,
+    label: 'Agosto'
+},
+{
+    value: 9,
+    label: 'Setembro'
+},
+{
+    value: 10,
+    label: 'Outubro'
+},
+{
+    value: 11,
+    label: 'Novembro'
+},
+{
+    value: 12,
+    label: 'Dezembro'
 },]
 const years = [{
     value: 2018,
@@ -36,9 +78,26 @@ interface IRouteParams {
     }
 }
 
+interface IData {
+    id: string;
+    description: string;
+    amountFormatted: string;
+    frequency: string;
+    dataFormatted: string;
+    tagColor: string;
+}
+
 
 const List: React.FC<IRouteParams> = ({ match }) => {
+    const [data, setData] = useState<IData[]>([]);
+    const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth() + 1));
+    const [yearSelected, setYearSelected] = useState<string>(String(new Date().getFullYear()));
+
     const { type } = match.params;
+
+    const listData = useMemo(() => {
+        return type === 'entry' ? gains : expenses;
+    }, [type])
 
     const title = useMemo(() => {
         return type === 'entry' ? 'Entradas' : type === 'exit' ? 'Saídas' : 'Error'
@@ -48,11 +107,37 @@ const List: React.FC<IRouteParams> = ({ match }) => {
         return type === 'entry' ? '#F7931B' : '#E44C4E'
     }, [type])
 
+    useEffect(() => {
+        const filteredDate = listData.filter(item => {
+            const date = new Date(item.date);
+            const month = String(date.getMonth() + 1);
+            const year = String(date.getFullYear());
+
+            return month === monthSelected && year === yearSelected;
+
+        })
+        const formattedData = filteredDate.map(item => {
+
+            return {
+                id: String(new Date().getTime()) + item.amount,
+                description: item.description,
+                amountFormatted: formatCurrency(Number(item.amount)),
+                frequency: item.frequency,
+                dataFormatted: formatDate(item.date),
+                tagColor: item.frequency === 'recorrente' ? '#4E41F0' : '#E44C4E'
+            }
+        })
+
+        setData(formattedData);
+    }, [listData,monthSelected,yearSelected])
+
+
+
     return (
         <Container>
             <ContentHeader title={title} lineColor={lineColor}>
-                <SelectInput options={months} />
-                <SelectInput options={years} />
+                <SelectInput options={months} onChange={(e) => setMonthSelected(e.target.value)} defaultValue={monthSelected} />
+                <SelectInput options={years} onChange={(e) => setYearSelected(e.target.value)} defaultValue={yearSelected} />
             </ContentHeader>
             <Filters>
                 <button className="tag-filter tag-filter-recurrent">
@@ -63,75 +148,18 @@ const List: React.FC<IRouteParams> = ({ match }) => {
                 </button>
             </Filters>
             <Content>
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
+                {
+                    data.map(item => (
+                        <HistoryFinanceCard
+                            key={item.id}
+                            tagColor={item.tagColor}
+                            title={item.description}
+                            subtitle={item.dataFormatted}
+                            amount={item.amountFormatted}
+                        />
+                    ))
 
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
-
-                <HistoryFinanceCard
-                    tagColor={'#e44c4e'}
-                    title="Conta de Luz"
-                    subtitle="27/07/2020"
-                    amount="R$ 130,00"
-                />
+                }
             </Content>
 
         </Container>
