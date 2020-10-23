@@ -36,8 +36,8 @@ interface IData {
 
 const List: React.FC<IRouteParams> = ({ match }) => {
     const [data, setData] = useState<IData[]>([]);
-    const [monthSelected, setMonthSelected] = useState<string>(String(new Date().getMonth() + 1));
-    const [yearSelected, setYearSelected] = useState<string>(String(new Date().getFullYear()));
+    const [monthSelected, setMonthSelected] = useState<number>(new Date().getMonth() + 1);
+    const [yearSelected, setYearSelected] = useState<number>(new Date().getFullYear());
     const [selectedFrequency,setSelectedFrequency] = useState(['recorrente','eventual']);
 
     const movimentType = match.params.type;
@@ -58,7 +58,7 @@ const List: React.FC<IRouteParams> = ({ match }) => {
       return  movimentType === 'entry' ?
         {
             title:'Entradas',
-            lineColor: '#F7931B',
+            lineColor: '#4E41F0',
             data: gains
         } :
         {
@@ -109,13 +109,32 @@ const List: React.FC<IRouteParams> = ({ match }) => {
         }
         setSelectedFrequency((prev) => [...prev,frequency])
     }
+
+    const handleMonthSelected = (month: string) => {
+        try {
+            const parseMonth = Number(month);
+            setMonthSelected(parseMonth);
+            
+        } catch (error) {
+            console.log(`${error} in function handleMonthSelected`);
+        }
+    }
+
+    const handleYearSelected = (year: string) => {
+        try {
+            const parseYear = Number(year);
+            setYearSelected(parseYear);
+        } catch (error) {
+            console.log(`${error} in function handleYearSelected`);
+        }
+    }
     
     useEffect(() => {
         const {data} = pageData;
         const filteredDate = data.filter(item => {
             const date = new Date(item.date);
-            const month = String(date.getMonth() + 1);
-            const year = String(date.getFullYear());
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
 
             return month === monthSelected && year === yearSelected && selectedFrequency.includes(item.frequency);
 
@@ -138,8 +157,8 @@ const List: React.FC<IRouteParams> = ({ match }) => {
     return (
         <Container>
             <ContentHeader title={pageData.title} lineColor={pageData.lineColor}>
-                <SelectInput options={months} onChange={(e) => setMonthSelected(e.target.value)} defaultValue={monthSelected} />
-                <SelectInput options={years} onChange={(e) => setYearSelected(e.target.value)} defaultValue={yearSelected} />
+                <SelectInput options={months} onChange={(e) => handleMonthSelected(e.target.value)} defaultValue={monthSelected} />
+                <SelectInput options={years} onChange={(e) => handleYearSelected(e.target.value)} defaultValue={yearSelected} />
             </ContentHeader>
             <Filters>
                 <button onClick={() => handleSelectedFrequency('recorrente')} className={`tag-filter tag-filter-recurrent ${selectedFrequency.includes('recorrente') && 'tag-actived'}`}>
