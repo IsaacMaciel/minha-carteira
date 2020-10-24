@@ -10,7 +10,12 @@ import gains from '../../repositories/gains';
 import expenses from '../../repositories/expenses';
 
 import listMonths from '../../utils/months';
+
 import HappyImg from '../../assets/happy.svg'
+import SadImg from '../../assets/sad.svg';
+import GrinningImg from '../../assets/grinning.svg'
+
+import calculateBalance from '../../utils/calculateBalance'
 
 
 
@@ -65,6 +70,46 @@ const Dashboard: React.FC = () => {
         })
     }, [])
 
+    const totalExpenses = useMemo(() => {
+        return calculateBalance(monthSelected, yearSelected, expenses);
+    }, [monthSelected, yearSelected])
+
+    const totalGains = useMemo(() => {
+        return calculateBalance(monthSelected, yearSelected, gains);
+    }, [monthSelected, yearSelected])
+
+    const totalBalance = useMemo(() => {
+        return totalGains - totalExpenses;
+    }, [totalExpenses, totalGains])
+
+    const messageWallet = useMemo(() => {
+        if (totalBalance > 0) {
+            return {
+                title: "Muito bem!",
+                description: "Sua carteira está positiva!",
+                footerText: "Continue assim. Considere investir o seu saldo",
+                icon: HappyImg
+            }
+        } else if (totalBalance === 0) {
+            return {
+                title: "Ufa,passou perto!",
+                description: "Você gastou exatamente o que recebeu",
+                footerText: "Tente poupar mais um pouco no próximo mês",
+                icon: GrinningImg
+            }
+        } else {
+            return {
+                title: "Eitaa!!",
+                description: "Você fechou o mês negativo",
+                footerText: "Procure economizar mais no mês que vem e cortar as coisas desnecessárias",
+                icon: SadImg
+            }
+        }
+
+
+    }, [totalBalance])
+
+
     const handleMonthSelected = (month: string) => {
         try {
             const parseMonth = Number(month);
@@ -92,11 +137,11 @@ const Dashboard: React.FC = () => {
                 <SelectInput options={years} onChange={(e) => handleYearSelected(e.target.value)} defaultValue={yearSelected} />
             </ContentHeader>
             <Content>
-                <WalletBox title="saldo" amount={200} footerlabel="atualizado com base nas entradas e saídas" icon="dolar" color="#4E41F0"></WalletBox>
-                <WalletBox title="entradas" amount={5000.00} footerlabel="atualizado com base nas entradas e saídas" icon="arrowUp" color="#F7931B"></WalletBox>
-                <WalletBox title="saídas" amount={4800.00} footerlabel="atualizado com base nas entradas e saídas" icon="arrowDown" color="#E44C4E"></WalletBox>
+                <WalletBox title="saldo" amount={totalBalance} footerlabel="atualizado com base nas entradas e saídas" icon="dolar" color="#4E41F0"></WalletBox>
+                <WalletBox title="entradas" amount={totalGains} footerlabel="atualizado com base nas entradas e saídas" icon="arrowUp" color="#F7931B"></WalletBox>
+                <WalletBox title="saídas" amount={totalExpenses} footerlabel="atualizado com base nas entradas e saídas" icon="arrowDown" color="#E44C4E"></WalletBox>
 
-                <MessageBox title="Muito bem!" description="Sua carteira está positiva!" footerText="Continue assim. Considere investir o seu saldo" icon={HappyImg} />
+                <MessageBox title={messageWallet.title} description={messageWallet.description} footerText={messageWallet.footerText} icon={messageWallet.icon} />
             </Content>
         </Container>
     )
