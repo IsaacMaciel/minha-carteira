@@ -4,6 +4,7 @@ import ContentHeader from '../../components/ContentHeader'
 import SelectInput from '../../components/SelectInput';
 import WalletBox from '../../components/WalletBox';
 import MessageBox from '../../components/MessageBox';
+import PieChartBox from '../../components/PieChartBox';
 
 
 import gains from '../../repositories/gains';
@@ -21,18 +22,6 @@ import calculateBalance from '../../utils/calculateBalance'
 
 import { Container, Content } from './styles'
 
-const options = [{
-    value: 'Isaac Maciel',
-    label: 'Isaac Maciel'
-},
-{
-    value: 'Gabi Amaral',
-    label: 'Gabi Amaral'
-},
-{
-    value: 'Maria Bethania',
-    label: 'Maria Bethania'
-},]
 
 
 
@@ -109,6 +98,30 @@ const Dashboard: React.FC = () => {
 
     }, [totalBalance])
 
+    const relationExpensesVersusGains = useMemo(() => {
+        const total = totalGains + totalExpenses;
+
+        const percentGains = (totalGains / total) * 100;
+        const percentExpenses = (totalExpenses / total) * 100;
+
+        const data = [
+            {
+                name: 'Entradas',
+                value: totalGains,
+                percent: Number(percentGains.toFixed(1)),
+                color: '#F7931B'
+            },
+            {
+                name: 'Saídas',
+                value: totalExpenses,
+                percent: Number(percentExpenses.toFixed(1)),
+                color: '#E44C4E'
+            }
+        ]
+
+
+        return data;
+    },[totalGains,totalExpenses])
 
     const handleMonthSelected = (month: string) => {
         try {
@@ -142,6 +155,7 @@ const Dashboard: React.FC = () => {
                 <WalletBox title="saídas" amount={totalExpenses} footerlabel="atualizado com base nas entradas e saídas" icon="arrowDown" color="#E44C4E"></WalletBox>
 
                 <MessageBox title={messageWallet.title} description={messageWallet.description} footerText={messageWallet.footerText} icon={messageWallet.icon} />
+                <PieChartBox data={relationExpensesVersusGains} />
             </Content>
         </Container>
     )
