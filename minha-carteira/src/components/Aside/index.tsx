@@ -1,17 +1,28 @@
-import React from 'react'
+import React from "react";
 
-import { Link } from 'react-router-dom'
-import logoImg from '../../assets/logo.svg';
+import { Link } from "react-router-dom";
+import logoImg from "../../assets/logo.svg";
 import {
     MdDashboard,
     MdArrowDownward,
     MdArrowUpward,
-    MdExitToApp
-} from 'react-icons/md'
+    MdExitToApp,
+} from "react-icons/md";
 
-import { Container, Header, LogImg, MenuContainer, MenuItemLink, Title } from './styles';
+import { useAuth } from "../../hooks/auth";
+
+import {
+    Container,
+    Header,
+    LogImg,
+    MenuContainer,
+    MenuItemLink,
+    Title,
+    MenuItemButton,
+} from "./styles";
 
 const Aside: React.FC = () => {
+    const { signOut } = useAuth();
     return (
         <Container>
             <Header>
@@ -20,36 +31,34 @@ const Aside: React.FC = () => {
             </Header>
 
             <MenuContainer>
-                <Link to="/dashboard" style={{textDecoration:"none"}}>
-                    <MenuItemLink >
+                <Link to="/dashboard" style={{ textDecoration: "none" }}>
+                    <MenuItemLink>
                         <MdDashboard />
-                    DashBoard
-                </MenuItemLink>
+                        DashBoard
+                    </MenuItemLink>
                 </Link>
 
-
-                <Link to="/list/entry" style={{textDecoration:"none"}}>
+                <Link to="/list/entry" style={{ textDecoration: "none" }}>
                     <MenuItemLink>
                         <MdArrowUpward />
-                   Entradas
-                </MenuItemLink>
+                        Entradas
+                    </MenuItemLink>
                 </Link>
 
-                <Link to="/list/exit" style={{textDecoration:"none"}}>
-                    <MenuItemLink >
+                <Link to="/list/exit" style={{ textDecoration: "none" }}>
+                    <MenuItemLink>
                         <MdArrowDownward />
-                    Saídas
-                </MenuItemLink>
+                        Saídas
+                    </MenuItemLink>
                 </Link>
 
-                <MenuItemLink href="#">
+                <MenuItemButton onClick={() => signOut()}>
                     <MdExitToApp />
                     Sair
-                </MenuItemLink>
+                </MenuItemButton>
             </MenuContainer>
-
         </Container>
-    )
-}
+    );
+};
 
 export default Aside;

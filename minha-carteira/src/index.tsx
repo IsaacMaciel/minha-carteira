@@ -1,13 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ThemeProvider } from "./hooks/themes";
+import { AuthProvider } from "./hooks/auth";
 import App from "./App";
 // import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
     <React.StrictMode>
         <ThemeProvider>
-            <App />
+            <AuthProvider>
+                <App />
+            </AuthProvider>
         </ThemeProvider>
     </React.StrictMode>,
     document.getElementById("root")
