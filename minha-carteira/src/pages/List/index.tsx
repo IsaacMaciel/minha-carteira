@@ -1,27 +1,25 @@
-import React, { useMemo, useState, useEffect } from 'react'
-import {uuid} from 'uuidv4'
+import React, { useMemo, useState, useEffect } from "react";
+import { uuid } from "uuidv4";
 
-import ContentHeader from '../../components/ContentHeader';
-import HistoryFinanceCard from '../../components/HistoryFinanceCard';
-import SelectInput from '../../components/SelectInput';
+import ContentHeader from "../../components/ContentHeader";
+import HistoryFinanceCard from "../../components/HistoryFinanceCard";
+import SelectInput from "../../components/SelectInput";
 
-import gains from '../../repositories/gains';
-import expenses from '../../repositories/expenses';
+import gains from "../../repositories/gains";
+import expenses from "../../repositories/expenses";
 
-import formatCurrency from '../../utils/formatCurrency';
-import formatDate from '../../utils/formatDate';
-import listMonths from '../../utils/months';
+import formatCurrency from "../../utils/formatCurrency";
+import formatDate from "../../utils/formatDate";
+import listMonths from "../../utils/months";
 
-
-import { Container, Content, Filters } from './styles';
-
+import { Container, Content, Filters } from "./styles";
 
 interface IRouteParams {
     match: {
         params: {
             type: string;
-        }
-    }
+        };
+    };
 }
 
 interface IData {
@@ -33,92 +31,88 @@ interface IData {
     tagColor: string;
 }
 
-
 const List: React.FC<IRouteParams> = ({ match }) => {
     const [data, setData] = useState<IData[]>([]);
-    const [monthSelected, setMonthSelected] = useState<number>(new Date().getMonth() + 1);
-    const [yearSelected, setYearSelected] = useState<number>(new Date().getFullYear());
-    const [selectedFrequency,setSelectedFrequency] = useState(['recorrente','eventual']);
+    const [monthSelected, setMonthSelected] = useState<number>(
+        new Date().getMonth() + 1
+    );
+    const [yearSelected, setYearSelected] = useState<number>(
+        new Date().getFullYear()
+    );
+    const [selectedFrequency, setSelectedFrequency] = useState([
+        "recorrente",
+        "eventual",
+    ]);
 
     const movimentType = match.params.type;
 
-    // const listData = useMemo(() => {
-    //     return movimentType === 'entry' ? gains : expenses;
-    // }, [movimentType])
-
-    // const title = useMemo(() => {
-    //     return movimentType === 'entry' ? 'Entradas' : movimentType === 'exit' ? 'Saídas' : 'Error'
-    // }, [movimentType]);
-
-    // const lineColor = useMemo(() => {
-    //     return movimentType === 'entry' ? '#F7931B' : '#E44C4E'
-    // }, [movimentType])
-
     const pageData = useMemo(() => {
-      return  movimentType === 'entry' ?
-        {
-            title:'Entradas',
-            lineColor: '#4E41F0',
-            data: gains
-        } :
-        {
-            title:'Saídas',
-            lineColor: '#E44C4E',
-            data:expenses
-        }
-        
-    },[movimentType]) 
+        return movimentType === "entry"
+            ? {
+                  title: "Entradas",
+                  lineColor: "#4E41F0",
+                  data: gains,
+              }
+            : {
+                  title: "Saídas",
+                  lineColor: "#E44C4E",
+                  data: expenses,
+              };
+    }, [movimentType]);
 
-    const years = useMemo(()=>{
+    const years = useMemo(() => {
         let uniqueYears: number[] = [];
-        const { data } = pageData
+        const { data } = pageData;
 
-        data.forEach(item => {
+        data.forEach((item) => {
             const date = new Date(item.date);
             const year = date.getFullYear();
 
-            if(!uniqueYears.includes(year)) {
+            if (!uniqueYears.includes(year)) {
                 uniqueYears.push(year);
             }
-        })
+        });
 
-        return uniqueYears.map(year => {
+        return uniqueYears.map((year) => {
             return {
                 value: year,
                 label: String(year),
-            }
-        })
-    },[data])
+            };
+        });
+    }, [data]);
 
-    const months = useMemo(()=>{
-      return   listMonths.map((month,index) => {
+    const months = useMemo(() => {
+        return listMonths.map((month, index) => {
             return {
                 value: index + 1,
-                label: month
-            }
-        })
-    },[])
+                label: month,
+            };
+        });
+    }, []);
 
     const handleSelectedFrequency = (frequency: string): void => {
-        const alreadySelected = selectedFrequency.findIndex(item => item === frequency);
+        const alreadySelected = selectedFrequency.findIndex(
+            (item) => item === frequency
+        );
 
-        if(alreadySelected >= 0) {
-            const filtered = selectedFrequency.filter(item => item !== frequency);
+        if (alreadySelected >= 0) {
+            const filtered = selectedFrequency.filter(
+                (item) => item !== frequency
+            );
             setSelectedFrequency(filtered);
             return;
         }
-        setSelectedFrequency((prev) => [...prev,frequency])
-    }
+        setSelectedFrequency((prev) => [...prev, frequency]);
+    };
 
     const handleMonthSelected = (month: string) => {
         try {
             const parseMonth = Number(month);
             setMonthSelected(parseMonth);
-            
         } catch (error) {
             console.log(`${error} in function handleMonthSelected`);
         }
-    }
+    };
 
     const handleYearSelected = (year: string) => {
         try {
@@ -127,66 +121,85 @@ const List: React.FC<IRouteParams> = ({ match }) => {
         } catch (error) {
             console.log(`${error} in function handleYearSelected`);
         }
-    }
-    
+    };
+
     useEffect(() => {
-        const {data} = pageData;
-        const filteredDate = data.filter(item => {
+        const { data } = pageData;
+        const filteredDate = data.filter((item) => {
             const date = new Date(item.date);
             const month = date.getMonth() + 1;
             const year = date.getFullYear();
 
-            return month === monthSelected && year === yearSelected && selectedFrequency.includes(item.frequency);
-
-        })
-        const formattedData = filteredDate.map(item => {
-
+            return (
+                month === monthSelected &&
+                year === yearSelected &&
+                selectedFrequency.includes(item.frequency)
+            );
+        });
+        const formattedData = filteredDate.map((item) => {
             return {
                 id: uuid(),
                 description: item.description,
                 amountFormatted: formatCurrency(Number(item.amount)),
                 frequency: item.frequency,
                 dateFormatted: formatDate(item.date),
-                tagColor: item.frequency === 'recorrente' ? '#4E41F0' : '#E44C4E'
-            }
-        })
+                tagColor:
+                    item.frequency === "recorrente" ? "#4E41F0" : "#E44C4E",
+            };
+        });
 
         setData(formattedData);
-    }, [pageData,monthSelected,yearSelected,selectedFrequency])
+    }, [pageData, monthSelected, yearSelected, selectedFrequency]);
 
     return (
         <Container>
-            <ContentHeader title={pageData.title} lineColor={pageData.lineColor}>
-                <SelectInput options={months} onChange={(e) => handleMonthSelected(e.target.value)} defaultValue={monthSelected} />
-                <SelectInput options={years} onChange={(e) => handleYearSelected(e.target.value)} defaultValue={yearSelected} />
+            <ContentHeader
+                title={pageData.title}
+                lineColor={pageData.lineColor}
+            >
+                <SelectInput
+                    options={months}
+                    onChange={(e) => handleMonthSelected(e.target.value)}
+                    defaultValue={monthSelected}
+                />
+                <SelectInput
+                    options={years}
+                    onChange={(e) => handleYearSelected(e.target.value)}
+                    defaultValue={yearSelected}
+                />
             </ContentHeader>
             <Filters>
-                <button onClick={() => handleSelectedFrequency('recorrente')} className={`tag-filter tag-filter-recurrent ${selectedFrequency.includes('recorrente') && 'tag-actived'}`}>
+                <button
+                    onClick={() => handleSelectedFrequency("recorrente")}
+                    className={`tag-filter tag-filter-recurrent ${
+                        selectedFrequency.includes("recorrente") &&
+                        "tag-actived"
+                    }`}
+                >
                     Recorrentes
                 </button>
-                <button onClick={() => handleSelectedFrequency('eventual')} className={`tag-filter tag-filter-eventual ${selectedFrequency.includes('eventual') && 'tag-actived'}`}>
+                <button
+                    onClick={() => handleSelectedFrequency("eventual")}
+                    className={`tag-filter tag-filter-eventual ${
+                        selectedFrequency.includes("eventual") && "tag-actived"
+                    }`}
+                >
                     Eventuais
                 </button>
             </Filters>
             <Content>
-                {
-                    data.map(item => (
-                        <HistoryFinanceCard
-                            key={item.id}
-                            tagColor={item.tagColor}
-                            title={item.description}
-                            subtitle={item.dateFormatted}
-                            amount={item.amountFormatted}
-                        />
-                    ))
-
-                }
+                {data.map((item) => (
+                    <HistoryFinanceCard
+                        key={item.id}
+                        tagColor={item.tagColor}
+                        title={item.description}
+                        subtitle={item.dateFormatted}
+                        amount={item.amountFormatted}
+                    />
+                ))}
             </Content>
-
         </Container>
-
-
-    )
-}
+    );
+};
 
 export default List;
