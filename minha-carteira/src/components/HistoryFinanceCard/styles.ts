@@ -1,11 +1,25 @@
-import styled from 'styled-components';
-
+import styled, { keyframes } from "styled-components";
 
 interface ITagProps {
     color: string;
 }
+
+const animate = keyframes`
+    0% {
+        transform: translateX(-100px);
+        opacity:0;
+    }
+    50% {
+        opacity: .3;
+    }
+    100% {
+        transform: translateX(0px);
+        opacity:1
+    }
+    `;
 export const Container = styled.li`
-    background-color: ${props => props.theme.colors.tertiary};
+    animation: ${animate} ease-in;
+    background-color: ${(props) => props.theme.colors.tertiary};
 
     list-style: none;
     border-radius: 10px;
@@ -13,22 +27,22 @@ export const Container = styled.li`
     margin: 10px 0px;
     padding: 12px 10px;
 
-    display:flex;
+    display: flex;
     justify-content: space-between;
     align-items: center;
 
     cursor: pointer;
-    transition: all .3s;
+    transition: all 0.3s;
 
     position: relative;
 
     &:hover {
-        opacity: .7;
+        opacity: 0.7;
         transform: translateX(10px);
     }
 
     > div {
-        display:flex;
+        display: flex;
         flex-direction: column;
         justify-content: space-between;
 
@@ -38,14 +52,13 @@ export const Container = styled.li`
         font-weight: 500;
         font-size: 22px;
     }
-
 `;
 
 export const Tag = styled.div<ITagProps>`
     width: 10px;
     height: 60%;
 
-    background-color: ${props => props.color};
-    position:absolute;
-    left:0px;
+    background-color: ${(props) => props.color};
+    position: absolute;
+    left: 0px;
 `;
